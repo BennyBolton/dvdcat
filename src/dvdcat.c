@@ -49,7 +49,7 @@ int dvdcat(options_t* options, writeable_t* stream) {
     pgc_t* program_chain;
     ptt_info_t chapter_info;
     cell_playback_t cell_info;
-    int count, read, ret_code = 0, cur_cell, start_cell, next_cell, end_cell;
+    int count, read, ret_code = 1, cur_cell, start_cell, next_cell, end_cell;
     progress_t progress;
     int sector;
     unsigned char buffer[DVDCAT_BLOCK_SIZE * DVD_VIDEO_LB_LEN];
@@ -179,6 +179,6 @@ int dvdcat(options_t* options, writeable_t* stream) {
     return ret_code;
 
     error:
-    ret_code = -1;
+    ret_code = 0;
     goto end;
 }
