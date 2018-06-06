@@ -70,7 +70,7 @@ int options_parse(options_t* opts, int argc, char* argv[]) {
                 break;
 
             case 't':
-                opts->title = strtol(optarg, &end, 0);
+                opts->title = strtol(optarg, &end, 10);
                 if (end == optarg || (end && end[0]) || opts->title < 1) {
                     log_error("Title must be a positive number\n");
                     return 1;
@@ -78,7 +78,7 @@ int options_parse(options_t* opts, int argc, char* argv[]) {
                 break;
 
             case 'a':
-                opts->angle = strtol(optarg, &end, 0);
+                opts->angle = strtol(optarg, &end, 10);
                 if (end == optarg || (end && end[0]) || opts->angle < 1) {
                     log_error("Angle must be a positive number\n");
                     return 1;
@@ -86,7 +86,7 @@ int options_parse(options_t* opts, int argc, char* argv[]) {
                 break;
 
             case 'c':
-                opts->chapter_start = strtol(optarg, &end, 0);
+                opts->chapter_start = strtol(optarg, &end, 10);
                 if (end && end[0] != 0 && end[0] != '-') opts->chapter_start = 0;
                 if (end == optarg || opts->chapter_start < 1) {
                     log_error("Chapters must be a positive number or range\n");
@@ -94,7 +94,7 @@ int options_parse(options_t* opts, int argc, char* argv[]) {
                 }
                 if (end && end[0]) {
                     if (end[1]) {
-                        opts->chapter_end = strtol(end + 1, &end, 0);
+                        opts->chapter_end = strtol(end + 1, &end, 10);
                         if ((end && end[0]) || opts->chapter_end < opts->chapter_start) {
                             log_error("Chapters must be a positive number or range\n");
                             return 1;
