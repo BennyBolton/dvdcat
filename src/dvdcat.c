@@ -37,9 +37,30 @@ static int get_next_cell(pgc_t* chain, int* pos, int end, int angle) {
 }
 
 
+static long time_from_playback(dvd_time_t* time) {
+    static float frame_time[] = {
+        -1.0,
+        40.0,
+        -1.0,
+        33.3667
+    };
+    long ms = 0;
+    float frame;
+
+    ms += ((time->hour >> 4) * 10 + (time->hour & 0xf)) * 3600000L;
+    ms += ((time->minute >> 4) * 10 + (time->minute & 0xf)) * 60000L;
+    ms += ((time->second >> 4) * 10 + (time->second & 0xf)) * 1000L;
+
+    frame = frame_time[time->frame_u >> 6];
+    if (frame > 0) {
+        ms += (((time->frame_u >> 4) & 3) * 10 + (time->frame_u & 0xf)) * frame;
+    }
+
+    return ms;
+}
+
+
 int dvdcat(options_t* options, writeable_t* stream) {
-    // Do something along the lines of
-    // https://github.com/hilbix/libdvdread-samples/blob/master/play_title.c
     dvd_reader_t* dvd = NULL;
     dvd_file_t* title = NULL;
     ifo_handle_t* video_manager = NULL;
@@ -53,6 +74,7 @@ int dvdcat(options_t* options, writeable_t* stream) {
     progress_t progress;
     int sector;
     unsigned char buffer[DVDCAT_BLOCK_SIZE * DVD_VIDEO_LB_LEN];
+    long length = 0;
 
     log_info("Using device: %s\n", options->device);
     log_debug("Opening dvd\n");
@@ -143,8 +165,14 @@ int dvdcat(options_t* options, writeable_t* stream) {
         next_cell = get_next_cell(program_chain, &cur_cell, end_cell, options->angle);
         cell_info = program_chain->cell_playback[cur_cell - 1];
         count += cell_info.last_sector - cell_info.first_sector + 1;
+        length += time_from_playback(&cell_info.playback_time);
     }
 
+    log_info("Length to extract: %02d:%02d:%02d.%03d\n",
+        (int)(length / 3600000L),
+        (int)(length / 60000L) % 60,
+        (int)(length / 1000L) % 60,
+        (int)(length % 1000L));
     log_debug("Starting data stream\n");
     progress_start(&progress, DVD_VIDEO_LB_LEN * (long)count);
     for (next_cell = start_cell; next_cell <= end_cell;) {
