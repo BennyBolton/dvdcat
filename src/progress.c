@@ -22,16 +22,16 @@ static long time_diff(const struct timespec* then, const struct timespec* now) {
 static void output_progress(progress_t* progress) {
     long diff = time_diff(&progress->start_time, &progress->last_update);
     int speed = diff > 0 ? (int)(progress->progress / diff) : 0;
-    log_info("\rProgress: %3d%%, %d MB / %d MB, %d KB/s, Elapsed: %02d:%02d",
+    log_info("Progress: %3d%%, %d MB / %d MB, %d KB/s, Elapsed: %02d:%02d",
         100 * progress->progress / progress->total,
         progress->progress / 1000000L, progress->total / 1000000L, speed,
         (diff / 60000L) % 60L, (diff / 1000L) % 60L);
     if (progress->progress > 0 && diff > DVDCAT_ETA_DELAY) {
         diff = diff * ((progress->total - progress->progress) / (float)progress->progress);
-        log_info(", Remaining: %02d:%02d ",
+        log_info(", Remaining: %02d:%02d\r",
             (diff / 60000L) % 60L, (diff / 1000L) % 60L);
     } else {
-        log_info(" ");
+        log_info("\r");
     }
 }
 
