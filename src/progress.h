@@ -10,6 +10,7 @@ typedef struct _progress_t progress_t;
 struct _progress_t {
     long progress, total;
     struct timespec start_time, last_update;
+    int line_length;
 };
 
 
