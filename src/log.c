@@ -52,9 +52,7 @@ void log_error(const char* fmt, ...) {
     if (log_level > LOG_LEVEL_ERROR) return;
 
     va_start(args, fmt);
-    fprintf(stderr, "\e[31m");
     vfprintf(stderr, fmt, args);
-    fprintf(stderr, "\e[m");
     va_end(args);
 }
 
